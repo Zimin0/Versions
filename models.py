@@ -25,7 +25,7 @@ class Version(BaseModel):
     __pattern: ClassVar[re.Pattern[str]]
 
     # registry of all available "Version" formats
-    __registry: ClassVar[list[type[Version]]] = []
+    __registry: ClassVar[list["Version"]] = []
 
     def __init_subclass__(cls, **kwargs) -> None:
         """Validate and register every concrete Version subclass."""
@@ -52,6 +52,9 @@ class Version(BaseModel):
 
         cls.__pattern = pattern
         Version.__registry.append(cls)
+    
+    def __str__(self):
+        return f"{type(self).__name__}='{self.version}'"
 
     @field_validator("version")
     @classmethod
@@ -87,6 +90,9 @@ class Version(BaseModel):
         """Return all registered concrete version formats."""
         return tuple(Version.__registry)
 
+    @classmethod
+    def convertTo(cls, to: Version) -> Version:
+        """Convert version to other format."""
 
 def parse_from_str(value: str) -> Version:
     matched_types = [

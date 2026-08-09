@@ -27,11 +27,3 @@ class BuildVersion(Version):
 
     REGEX = r"X\d+-\d+\.\d+-[0-9A-Za-z]+"
     EXAMPLE = "X70-26.2-ahbhge25"
-
-AvailableVersion = (
-    Semver
-    | Hash
-    | ProductionVersion
-    | BuildVersion
-)
-
