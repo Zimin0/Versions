@@ -3,8 +3,8 @@ from versions.converters.errors import ConverterDoesNotImplementedError
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from  versions.version import Version
-    from  versions.converters.converter import Converter
+    from versions.version import Version
+    from versions.converters.converter import Converter
 
 # Todo: make it SingleTone
 class ConvertersRegistry():

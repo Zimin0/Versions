@@ -9,4 +9,4 @@ class SemverToBuildConverter(Converter):
 
     def convert(self, source_version: Version):
         """Convert Semver to BuildVersion."""
-        return BuildVersion(version="X70-26.2-ahbhge25")
+        return BuildVersion(version=BuildVersion.EXAMPLE)
