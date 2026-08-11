@@ -1,2 +1,1 @@
-from versions.converters.registry import ConvertersRegistry
-
+# from versions.converters.registry import ConvertersRegistry

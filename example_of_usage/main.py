@@ -1,3 +1,5 @@
+from pydantic import ValidationError
+
 from versions.version import Version, parse_from_str, in_allowed_format
 from versions.converters.registry import main_converter_registry
 from versions.converters.service import load_converters
@@ -28,10 +30,21 @@ print("# Сценарий 3: Посмотреть все доступные фо
 print(Version.formats())
 
 print("# Сценарий 4: Проверить, что версия (str) соответствует формату Semver.")
-...
+inputed_version = "вапвапва"
 
-# Можно удалить этот метод?
-print(Semver.matches("11.5.7+25.3"))
+# method 1
+if Semver.matches(inputed_version):
+    print("Method 1: YES")
+else:
+    print("Method 1: NO")
+
+# method 2
+try:
+    Semver(version=inputed_version)
+except ValidationError:
+    print("Method 2: NO")
+else:
+    print("Method 2: YES")
 
 print("# Сценарий 5: Посмотреть все доступные конверторы версий.")
 print("Available converters:", main_converter_registry.get_all())

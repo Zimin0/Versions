@@ -1,10 +1,6 @@
-class VersionValidationError(ValueError):
-    """Base error for invalid version values."""
-
-
-class UnknownVersionFormatError(VersionValidationError):
+class UnknownVersionFormatError(Exception):
     """No registered format matched the supplied version."""
 
 
-class AmbiguousVersionFormatError(VersionValidationError):
+class AmbiguousVersionFormatError(Exception):
     """Several registered formats matched the supplied version."""

@@ -4,7 +4,7 @@ from typing import ClassVar, get_args
 from pydantic import BaseModel, ConfigDict, field_validator
 from types import UnionType
 
-from versions.errors import VersionValidationError, UnknownVersionFormatError, AmbiguousVersionFormatError
+from versions.errors import UnknownVersionFormatError, AmbiguousVersionFormatError
 from versions.meta_class import __VersionMeta 
 
 class Version(BaseModel, metaclass=__VersionMeta):
@@ -59,12 +59,12 @@ class Version(BaseModel, metaclass=__VersionMeta):
 
     @field_validator("version")
     @classmethod
-    def validate_version(cls, value: str) -> str:
+    def __validate_version(cls, value: str) -> str:
         if cls is Version:
-            raise VersionValidationError("Version is a base class; use a concrete subclass")
+            raise ValueError("Version is a base class; use a concrete subclass")
 
         if cls.__pattern.fullmatch(value) is None:
-            raise VersionValidationError(
+            raise ValueError(
                 f"{cls.__name__}: {value!r} does not match {cls.REGEX!r}. Example: {cls.EXAMPLE!r}"
         )
 
@@ -77,14 +77,6 @@ class Version(BaseModel, metaclass=__VersionMeta):
             cls is not Version
             and cls.__pattern.fullmatch(value) is not None
         )
-
-    @classmethod
-    def try_parse(cls, value: str) -> 'Version' | None:
-        """Create this version type or return None."""
-        if not cls.matches(value):
-            return None
-
-        return cls(version=value)
 
     @classmethod
     def formats(cls) -> tuple[type[Version], ...]:

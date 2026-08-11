@@ -49,7 +49,7 @@ def test_invalid_regex():
         class InvalidVersionFormat(Version):
             REGEX = r"^^^$$$[a-z"
             EXAMPLE = "11.5.7"
-
-# # print with repr()
-# str1 = "hell"
-# raise ValueError(f"Error: {str1!r}")
+            
+def test_matches_function():
+    assert SemverFormat.matches("11.5.7"), "Checking valid version format by Version.matches(). Expecting 'True' result."
+    assert not SemverFormat.matches("1234567"), "Checking invalid version format by Version.matches(). Expecting 'False' result."
