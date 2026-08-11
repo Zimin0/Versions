@@ -90,9 +90,12 @@ class Version(BaseModel):
         """Return all registered concrete version formats."""
         return tuple(Version.__registry)
 
-    @classmethod
-    def convertTo(cls, to: Version) -> Version:
+    # could be a @classmethod?
+    def convert_to(self, to: type[Version]) -> Version:
         """Convert version to other format."""
+        from versions.converters.service import convert_version
+
+        return convert_version(source=self, target_type=to)
 
 def parse_from_str(value: str) -> Version:
     matched_types = [

@@ -9,16 +9,21 @@ if __name__ == "__main__":
     # 4) Должа быть возможность добавлять дублер-конвертер - второй запасной способ конвертации.
     # 5) Должа быть возможность выдавать приоритет конверторам.
 
-    from versions.converters.models import Convertor
-    from versions.custom_models import Semver
-    from versions.converters.all_convertors import SemverToBuildConverter
+    from versions.converters.base import Convertor
+    from versions.custom_models import Semver, BuildVersion
+    from versions.converters.custom_converters import SemverToBuildConverter
+    from versions.converters.registry import main_convertor_registry
     
-    print("Available converters:", Convertor.formats())
+    print("Available converters:", main_convertor_registry.formats())
     
     source_semver = Semver(version="26.6.3+26.1")
     
-    c1 = SemverToBuildConverter()
-    print(c1.convert(source_semver))
+    converter_to_build = source_semver.convert_to(BuildVersion)
+    print(converter_to_build)
+    
+    # c1 = SemverToBuildConverter()
+    # print(c1.convert(source_semver))
+
     
     # Use case 1
     # smv = Semver(version="26.6.3+26.1")
