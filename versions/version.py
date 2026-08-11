@@ -4,7 +4,7 @@ from typing import ClassVar, get_args
 from pydantic import BaseModel, ConfigDict, field_validator
 from types import UnionType
 
-from versions.errors import *
+from versions.errors import VersionValidationError, UnknownVersionFormatError, AmbiguousVersionFormatError
 
 class Version(BaseModel):
     """Base class for version formats."""
@@ -98,6 +98,11 @@ class Version(BaseModel):
         return convert_version(source=self, target_type=to)
 
 def parse_from_str(value: str) -> Version:
+    """
+    Parse from string and return Version subclass.
+    
+    raises: UnknownVersionFormatError, AmbiguousVersionFormatError
+    """
     matched_types = [
         version_type
         for version_type in Version.formats()

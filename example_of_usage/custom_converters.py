@@ -1,8 +1,9 @@
-from versions.custom_models import Semver, BuildVersion
-from versions.models import Version
-from versions.converters.base import Convertor
+from versions.version import Version
+from versions.converters.converter import Converter
 
-class SemverToBuildConverter(Convertor):
+from example_of_usage.custom_versions import Semver, BuildVersion
+
+class SemverToBuildConverter(Converter):
     SOURCE_TYPE = Semver
     TARGET_TYPE = BuildVersion
 

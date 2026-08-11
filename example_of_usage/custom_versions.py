@@ -1,5 +1,4 @@
-
-from versions.models import Version
+from versions.version import Version
 
 class Semver(Version):
     """Internal semantic-like version."""
