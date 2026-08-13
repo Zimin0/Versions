@@ -14,13 +14,10 @@ class Converter(ABC):
         """Register every concrete Converter subclass."""
         super().__init_subclass__(**kwargs)
 
-        # method convert must be defined
-
-
         # __dict__ will mnot allow to inherit REGEX or EXAMLE from a parent
         source_type = cls.__dict__.get("SOURCE_TYPE")
         target_type = cls.__dict__.get("TARGET_TYPE")
-        convert_method = cls.__dict__.get("convert")
+        convert_method = cls.__dict__.get("convert") # method convert must be defined
 
         if convert_method is None:
             raise TypeError(f"{cls.__name__} must implement convert() method")
