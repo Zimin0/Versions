@@ -18,7 +18,6 @@ class ConvertersRegistry():
         self.__all_Converters = []
     
     def append(self, Converter: "Converter"):
-        print("Appending new converter:", Converter)
         self.__all_Converters.append(Converter)
         
     def find_Converter(self, in_type: type["Version"], out_type: type["Version"]):

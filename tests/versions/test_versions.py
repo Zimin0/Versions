@@ -1,14 +1,17 @@
 import pytest
 from pydantic import ValidationError
 
-from tests.helpers import HashFormat, YearQuartalFormat, SemverFormat
+from versions.version import Version
+from tests.helpers import HashFormat, SemverFormat
 
 @pytest.fixture()
 def hash_version() -> HashFormat:
+    """Create HashFormat instance."""
     return HashFormat(version=HashFormat.EXAMPLE)
 
 @pytest.fixture()
-def semver_version() -> HashFormat:
+def semver_version() -> SemverFormat:
+    """Create SemverFormat instance."""
     return SemverFormat(version=SemverFormat.EXAMPLE)
 
 
@@ -49,6 +52,13 @@ def test_invalid_regex():
         class InvalidVersionFormat(Version):
             REGEX = r"^^^$$$[a-z"
             EXAMPLE = "11.5.7"
+
+def test_new_version_class_was_registered():
+    class NewVersion(Version):
+        REGEX = r"123"
+        EXAMPLE = "123"
+
+    assert NewVersion in Version.formats()
             
 def test_matches_function():
     assert SemverFormat.matches("11.5.7"), "Checking valid version format by Version.matches(). Expecting 'True' result."
