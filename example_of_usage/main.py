@@ -1,11 +1,9 @@
 from pydantic import ValidationError
 
-from versions.version import Version, parse_from_str, in_allowed_format
-from versions.converters.registry import main_converter_registry
-from versions.converters.service import load_converters
+from versions import Version, parse_from_str, in_allowed_format
+from versions.converters import load_converters, main_converter_registry
 
-from example_of_usage.custom_versions import Semver, Hash, BuildVersion
-
+from custom_versions import Semver, Hash, BuildVersion
 
 load_converters("example_of_usage.custom_converters")
 

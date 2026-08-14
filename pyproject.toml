@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=77.0.3"]
+build-backend = "setuptools.build_meta"
+
+
+[project]
+# Change this name if you plan to publish the package to PyPI.
+# The distribution name does not have to be the same as the import package name.
+name = "versions"
+version = "0.1.0"
+description = "Extensible version formats, validation, detection, and conversion."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+
+dependencies = [
+    "pydantic>=2,<3",
+]
+
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8,<10",
+    "build>=1.2",
+]
+
+
+[project.urls]
+# Replace these placeholders with your real repository URLs.
+Repository = "https://github.com/YOUR_USERNAME/YOUR_REPOSITORY"
+Issues = "https://github.com/YOUR_USERNAME/YOUR_REPOSITORY/issues"
+
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["versions*"]
+exclude = [
+    "tests*",
+    "example_of_usage*",
+]
+namespaces = false
+
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"

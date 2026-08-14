@@ -1,2 +1,16 @@
-**/__pycache__/
+__pycache__/
+*$py.class
 venv/
+.venv/
+env/
+ENV/
+wheels/
+.pytest_cache/
+.coverage
+.coverage.*
+.vscode/
+.env
+.env.*
+dist/
+build/
+*.egg-info/

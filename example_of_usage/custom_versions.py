@@ -1,4 +1,4 @@
-from versions.version import Version
+from versions import Version
 
 class Semver(Version):
     """Internal semantic-like version."""

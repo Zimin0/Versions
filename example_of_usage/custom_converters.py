@@ -1,7 +1,7 @@
-from versions.version import Version
-from versions.converters.converter import Converter
+from versions import Version
+from versions.converters import Converter
 
-from example_of_usage.custom_versions import Semver, BuildVersion
+from custom_versions import Semver, BuildVersion
 
 class SemverToBuildConverter(Converter):
     SOURCE_TYPE = Semver
