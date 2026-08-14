@@ -301,4 +301,4 @@ The project is currently under development. The public API may change before the
 
 ## License
 
-Add the license used by this repository here.
+MIT License
