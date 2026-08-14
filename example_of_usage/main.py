@@ -6,48 +6,91 @@ from versions.converters.service import load_converters
 
 from example_of_usage.custom_versions import Semver, Hash, BuildVersion
 
+
 load_converters("example_of_usage.custom_converters")
 
-# Any ancentor of Version is immutable.
+
+# Any subclass of Version is immutable.
 source = Semver(version="11.5.7+25.3")
 target = Hash(version="bh35ag56")
 
-print("## Сценарий 1: Выяснить, какой формат у переданной (str) версии.")
-unknown_version_format = "18.1.5+26.1"
-parsed_version = parse_from_str(unknown_version_format)
-assert type(parsed_version) == Semver
-assert parsed_version.version == "18.1.5+26.1"
 
-print("## Сценарий 2: Запретить ввод версии в формате Build.")
-yes = in_allowed_format(BuildVersion.EXAMPLE, Hash|Semver)
-print(f"{BuildVersion.EXAMPLE=} in a Hash or Semver format? ", end="")
-print("YES") if yes else print("NO")
-# OR by raising a error.
-# assert in_allowed_format(BuildVersion.EXAMPLE, Hash|Semver, raise_an_error=True)
-# TypeError: Version 'X70-26.2-ahbhge25' is not in allowed formats. Allowed formats: Hash: 'bh35ag56'; Semver: '11.5.7+25.3'; 
+print("## Scenario 1: Detect the format of a version string.")
 
-print("# Сценарий 3: Посмотреть все доступные форматы версий.")
-print(Version.formats())
+unknown_version = "18.1.5+26.1"
 
-print("# Сценарий 4: Проверить, что версия (str) соответствует формату Semver.")
-inputed_version = "вапвапва"
+parsed_version = parse_from_str(unknown_version)
 
-# method 1
-if Semver.matches(inputed_version):
-    print("Method 1: YES")
+assert type(parsed_version) is Semver
+assert parsed_version.version == unknown_version
+
+
+print("## Scenario 2: Restrict input to specific version formats.")
+
+is_allowed = in_allowed_format(
+    BuildVersion.EXAMPLE,
+    Hash | Semver,
+)
+
+print(
+    f"Is {BuildVersion.EXAMPLE!r} in Hash or Semver format? ",
+    end="",
+)
+print("YES" if is_allowed else "NO")
+
+# Alternatively, raise an error if the format is not allowed.
+#
+# in_allowed_format(
+#     BuildVersion.EXAMPLE,
+#     Hash | Semver,
+#     raise_an_error=True,
+# )
+#
+# TypeError:
+# Version 'XYZ70-26.2-ahbhge25' is not in allowed formats.
+# Allowed formats:
+# Hash: 'bh35ag56';
+# Semver: '11.5.7+25.3';
+
+
+print("## Scenario 3: Show all available version formats.")
+
+print("Available version formats:", Version.formats())
+
+
+print("## Scenario 4: Validate a string against the Semver format.")
+
+input_version = "invalid-version"
+
+# Method 1: validate using Version.matches().
+if Semver.matches(input_version):
+    print("Method 1: VALID")
 else:
-    print("Method 1: NO")
+    print("Method 1: INVALID")
 
-# method 2
+
+# Method 2: validate by creating a Version instance.
 try:
-    Semver(version=inputed_version)
+    Semver(version=input_version)
 except ValidationError:
-    print("Method 2: NO")
+    print("Method 2: INVALID")
 else:
-    print("Method 2: YES")
+    print("Method 2: VALID")
 
-print("# Сценарий 5: Посмотреть все доступные конверторы версий.")
-print("Available converters:", main_converter_registry.get_all())
 
-print("# Сценарий 6: Сконвертировать Semver в Build")
-print(f"Converted semver to build version:", source.convert_to(BuildVersion))
+print("## Scenario 5: Show all available version converters.")
+
+print(
+    "Available converters:",
+    main_converter_registry.get_all(),
+)
+
+
+print("## Scenario 6: Convert Semver to BuildVersion.")
+
+converted_version = source.convert_to(BuildVersion)
+
+print(
+    "Converted Semver to BuildVersion:",
+    converted_version,
+)

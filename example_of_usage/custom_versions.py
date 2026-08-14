@@ -24,5 +24,5 @@ class ProductionVersion(Version):
 class BuildVersion(Version):
     """Build version."""
 
-    REGEX = r"X\d+-\d+\.\d+-[0-9A-Za-z]+"
-    EXAMPLE = "X70-26.2-ahbhge25"
+    REGEX = r"XYZ\d+-\d+\.\d+-[0-9A-Za-z]+"
+    EXAMPLE = "XYZ70-26.2-ahbhge25"

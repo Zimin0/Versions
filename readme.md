@@ -112,7 +112,7 @@ in_allowed_format(
 Example error:
 
 ```text
-TypeError: Version 'X70-26.2-ahbhge25' is not in allowed formats.
+TypeError: Version 'XYZ70-26.2-ahbhge25' is not in allowed formats.
 Allowed formats: Hash: 'bh35ag56'; Semver: '11.5.7+25.3'
 ```
 
