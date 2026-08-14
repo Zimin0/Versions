@@ -38,7 +38,7 @@ pip install "git+https://github.com/<username>/<repository>.git"
 
 Replace `<username>` and `<repository>` with the actual GitHub repository path.
 
-## Quick Start
+## Quick Start (/example_of_usage/main.py)
 
 ```python
 from versions.version import Version, parse_from_str, in_allowed_format
@@ -266,7 +266,7 @@ After the module containing the converter is loaded, conversion can be performed
 source.convert_to(BuildVersion)
 ```
 
-## Example Project Structure
+## Project Structure
 
 ```text
 .
@@ -293,12 +293,6 @@ From the repository root:
 
 ```bash
 python -m example_of_usage.main
-```
-
-## Running Tests
-
-```bash
-pytest
 ```
 
 ## Project Status
