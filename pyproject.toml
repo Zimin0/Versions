@@ -1,13 +1,14 @@
 [build-system]
-requires = ["setuptools>=77.0.3"]
+requires = [
+    "setuptools>=77.0.3",
+    "setuptools-scm>=8",
+]
 build-backend = "setuptools.build_meta"
 
 
 [project]
-# Change this name if you plan to publish the package to PyPI.
-# The distribution name does not have to be the same as the import package name.
 name = "versions"
-version = "0.1.0"
+dynamic = ["version"]
 description = "Extensible version formats, validation, detection, and conversion."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -26,9 +27,8 @@ dev = [
 
 
 [project.urls]
-# Replace these placeholders with your real repository URLs.
-Repository = "https://github.com/YOUR_USERNAME/YOUR_REPOSITORY"
-Issues = "https://github.com/YOUR_USERNAME/YOUR_REPOSITORY/issues"
+Repository = "https://github.com/Zimin0/Versions"
+Issues = "https://github.com/Zimin0/Versions/issues"
 
 
 [tool.setuptools.packages.find]
@@ -39,6 +39,11 @@ exclude = [
     "example_of_usage*",
 ]
 namespaces = false
+
+
+[tool.setuptools_scm]
+version_scheme = "guess-next-dev"
+local_scheme = "node-and-date"
 
 
 [tool.pytest.ini_options]
