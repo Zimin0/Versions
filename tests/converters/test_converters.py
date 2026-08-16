@@ -153,3 +153,18 @@ def test_concrete_converter_was_registered(converter_registry: ConvertersRegistr
             return HashFormat(version=HashFormat.EXAMPLE)
 
     assert SemverToHashConverter in converter_registry.get_all()
+
+@pytest.mark.parametrize(
+        "priority", [-10, 0]
+)
+def test_converter_have_a_positive_priority(priority: int):
+    with pytest.raises(ValueError):
+        class SemverToHashConverter(Converter):
+            SOURCE_TYPE = SemverFormat
+            TARGET_TYPE = HashFormat
+            PRIORITY = priority
+    
+            def convert(self, source_version: Version):
+                return HashFormat(version=HashFormat.EXAMPLE)
+
+    # assert SemverToHashConverter in converter_registry.get_all()

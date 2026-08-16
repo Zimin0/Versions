@@ -266,6 +266,63 @@ After the module containing the converter is loaded, conversion can be performed
 source.convert_to(BuildVersion)
 ```
 
+### Converter Priority
+
+Multiple converters may be registered for the same source and target version types.
+
+Use the `PRIORITY` class attribute to control which converter should be selected first.
+
+```python
+from versions.converters.converter import Converter
+
+
+class PreferredSemverToBuildConverter(Converter):
+    SOURCE_TYPE = Semver
+    TARGET_TYPE = BuildVersion
+    PRIORITY = 1
+
+    def convert(self, source_version: Semver) -> BuildVersion:
+        ...
+
+
+class FallbackSemverToBuildConverter(Converter):
+    SOURCE_TYPE = Semver
+    TARGET_TYPE = BuildVersion
+    PRIORITY = 10
+
+    def convert(self, source_version: Semver) -> BuildVersion:
+        ...
+```
+
+A **lower `PRIORITY` value means a higher priority**.
+
+In the example above, the converters are evaluated in this order:
+
+```text
+PreferredSemverToBuildConverter   PRIORITY = 1
+FallbackSemverToBuildConverter    PRIORITY = 10
+```
+
+When the library searches for a converter from `Semver` to `BuildVersion`, `PreferredSemverToBuildConverter` is selected first.
+
+The default priority is:
+
+```python
+PRIORITY = 1
+```
+
+`PRIORITY` must be a positive value greater than zero.
+
+If multiple matching converters have the same priority, their relative order follows their registration order.
+
+The converter registry returned by:
+
+```python
+main_converter_registry.get_all()
+```
+
+is not sorted by priority. Priority ordering is applied when the library searches for a converter for a specific source/target pair.
+
 ## Project Structure
 
 ```text
