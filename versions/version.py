@@ -5,7 +5,7 @@ from pydantic import BaseModel, ConfigDict, field_validator
 from types import UnionType
 
 from versions.errors import UnknownVersionFormatError, AmbiguousVersionFormatError
-from versions.meta_class import __VersionMeta 
+from versions._internal.meta_class import __VersionMeta 
 
 class Version(BaseModel, metaclass=__VersionMeta):
     """Base class for version formats."""
