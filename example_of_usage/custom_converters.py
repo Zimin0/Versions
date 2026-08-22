@@ -1,15 +1,18 @@
+from custom_versions import BuildVersion, Semver
+
 from versions import Version
 from versions.converters import Converter
 from versions.converters.errors import CanNotConvertThisVersion
 
-from custom_versions import Semver, BuildVersion
 
 class BrokenSemverToBuildConverter(Converter):
     """
-    This convertor is broken. 
-    Library will try to convert version by this convertor first due to its highest priority.
+    This convertor is broken.
+    Library will try to convert version
+    by this convertor first due to its highest priority.
     Will catch a error and go to second priority converter - SemverToBuildConverter.
     """
+
     SOURCE_TYPE = Semver
     TARGET_TYPE = BuildVersion
     PRIORITY = 1
@@ -17,6 +20,7 @@ class BrokenSemverToBuildConverter(Converter):
     def convert(self, source_version: Version):
         """Brokent convert Semver to BuildVersion."""
         raise CanNotConvertThisVersion("    I'am broken converter. Skip me...")
+
 
 class SemverToBuildConverter(Converter):
     SOURCE_TYPE = Semver
@@ -26,9 +30,14 @@ class SemverToBuildConverter(Converter):
     def convert(self, source_version: Version):
         """Convert Semver to BuildVersion."""
         return BuildVersion(version=BuildVersion.EXAMPLE)
-    
+
+
 class SemverToBuildConverterByGitlab(Converter):
-    """Pairs with SemverToBuildConverter, but has lower PRIORITY. Represents a different way for convertation."""
+    """
+    Pairs with SemverToBuildConverter, but has lower PRIORITY.
+    Represents a different way for convertation.
+    """
+
     SOURCE_TYPE = Semver
     TARGET_TYPE = BuildVersion
     PRIORITY = 3

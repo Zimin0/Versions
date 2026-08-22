@@ -1,5 +1,6 @@
 from versions.version import Version
 
+
 class HashFormat(Version):
     REGEX = r"(?:[0-9A-Za-z]{8}|[0-9A-Za-z]{40})"
     EXAMPLE = "bh35ag56"

@@ -1,11 +1,10 @@
 import pytest
 
-from versions.version import Version
+from tests.helpers import HashFormat, SemverFormat
 from versions.converters.converter import Converter
 from versions.converters.registry import ConvertersRegistry
+from versions.version import Version
 
-from tests.helpers import HashFormat, SemverFormat
-from tests.converters.helpers import registry
 
 def test_new_converter_class_was_registered(registry: ConvertersRegistry):
     class SemverToHashConverter(Converter):
@@ -48,6 +47,7 @@ def test_converter_can_convert_version():
 
 def test_converter_without_source_type_cannot_be_created():
     with pytest.raises(TypeError):
+
         class InvalidConverter(Converter):
             TARGET_TYPE = HashFormat
 
@@ -57,6 +57,7 @@ def test_converter_without_source_type_cannot_be_created():
 
 def test_converter_without_target_type_cannot_be_created():
     with pytest.raises(TypeError):
+
         class InvalidConverter(Converter):
             SOURCE_TYPE = SemverFormat
 
@@ -66,6 +67,7 @@ def test_converter_without_target_type_cannot_be_created():
 
 def test_converter_source_type_must_be_version_subclass():
     with pytest.raises(TypeError):
+
         class InvalidConverter(Converter):
             SOURCE_TYPE = str
             TARGET_TYPE = HashFormat
@@ -76,6 +78,7 @@ def test_converter_source_type_must_be_version_subclass():
 
 def test_converter_target_type_must_be_version_subclass():
     with pytest.raises(TypeError):
+
         class InvalidConverter(Converter):
             SOURCE_TYPE = SemverFormat
             TARGET_TYPE = str
@@ -93,6 +96,7 @@ def test_source_and_target_types_cannot_be_inherited():
             return HashFormat(version=HashFormat.EXAMPLE)
 
     with pytest.raises(TypeError):
+
         class ChildConverter(ParentConverter):
             def convert(self, source_version: Version):
                 return HashFormat(version=HashFormat.EXAMPLE)
@@ -103,6 +107,7 @@ def test_converter_without_convert_implementation_cannot_be_created():
         TypeError,
         match=r"AbstractConverter must implement convert\(\) method",
     ):
+
         class AbstractConverter(Converter):
             SOURCE_TYPE = SemverFormat
             TARGET_TYPE = HashFormat
@@ -118,14 +123,19 @@ def test_converter_str():
 
     converter = SemverToHashConverter()
 
-    assert str(converter) == (f"SemverToHashConverter: {SemverFormat!r} --> {HashFormat!r}")
+    assert str(converter) == (
+        f"SemverToHashConverter: {SemverFormat!r} --> {HashFormat!r}"
+    )
+
 
 def test_abstract_converter_was_not_registered(registry: ConvertersRegistry):
     with pytest.raises(TypeError):
+
         class AbstractConverter(Converter):
             SOURCE_TYPE = SemverFormat
             TARGET_TYPE = HashFormat
-        AbstractConverter not in registry.get_all()
+
+        assert AbstractConverter not in registry.get_all()
 
 
 def test_concrete_converter_was_registered(registry: ConvertersRegistry):
@@ -138,15 +148,15 @@ def test_concrete_converter_was_registered(registry: ConvertersRegistry):
 
     assert SemverToHashConverter in registry.get_all()
 
-@pytest.mark.parametrize(
-        "priority", [-10, 0]
-)
+
+@pytest.mark.parametrize("priority", [-10, 0])
 def test_converter_have_a_positive_priority(priority: int):
     with pytest.raises(ValueError):
+
         class SemverToHashConverter(Converter):
             SOURCE_TYPE = SemverFormat
             TARGET_TYPE = HashFormat
             PRIORITY = priority
-    
+
             def convert(self, source_version: Version):
                 return HashFormat(version=HashFormat.EXAMPLE)

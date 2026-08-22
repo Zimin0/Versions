@@ -1,9 +1,8 @@
+from custom_versions import BuildVersion, Hash, Semver
 from pydantic import ValidationError
 
-from versions import Version, parse_from_str, in_allowed_format
+from versions import Version, in_allowed_format, parse_from_str
 from versions.converters import load_converters, main_converter_registry
-
-from custom_versions import Semver, Hash, BuildVersion
 
 load_converters("custom_converters")
 

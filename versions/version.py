@@ -1,18 +1,21 @@
 from __future__ import annotations
-import re
-from typing import ClassVar, get_args
-from pydantic import BaseModel, ConfigDict, field_validator
-from types import UnionType
 
-from versions.errors import UnknownVersionFormatError, AmbiguousVersionFormatError
-from versions._internal.meta_class import __VersionMeta 
+import re
+from types import UnionType
+from typing import ClassVar, get_args
+
+from pydantic import BaseModel, ConfigDict, field_validator
+
+from versions._internal.meta_class import __VersionMeta
+from versions.errors import AmbiguousVersionFormatError, UnknownVersionFormatError
+
 
 class Version(BaseModel, metaclass=__VersionMeta):
     """Base class for version formats."""
 
     model_config = ConfigDict(
-        frozen=True, # makes an instance immutable
-        extra="forbid", # no extra fields
+        frozen=True,  # makes an instance immutable
+        extra="forbid",  # no extra fields
     )
 
     # fild for user
@@ -26,7 +29,7 @@ class Version(BaseModel, metaclass=__VersionMeta):
     __pattern: ClassVar[re.Pattern[str]]
 
     # registry of all available "Version" formats
-    __registry: ClassVar[list["Version"]] = []
+    __registry: ClassVar[list[Version]] = []
 
     def __init_subclass__(cls, **kwargs) -> None:
         """Validate and register every concrete Version subclass."""
@@ -49,11 +52,13 @@ class Version(BaseModel, metaclass=__VersionMeta):
 
         # chack EXAMPLE validity
         if pattern.fullmatch(example) is None:
-            raise TypeError(f"{cls.__name__}.EXAMPLE={example!r} does not match REGEX={regex!r}")
+            raise TypeError(
+                f"{cls.__name__}.EXAMPLE={example!r} does not match REGEX={regex!r}"
+            )
 
         cls.__pattern = pattern
         Version.__registry.append(cls)
-    
+
     def __str__(self):
         return f"{type(self).__name__}='{self.version}'"
 
@@ -65,18 +70,16 @@ class Version(BaseModel, metaclass=__VersionMeta):
 
         if cls.__pattern.fullmatch(value) is None:
             raise ValueError(
-                f"{cls.__name__}: {value!r} does not match {cls.REGEX!r}. Example: {cls.EXAMPLE!r}"
-        )
+                f"{cls.__name__}: {value!r} does not match {cls.REGEX!r}. "
+                "Example: {cls.EXAMPLE!r}"
+            )
 
         return value
 
     @classmethod
     def matches(cls, value: str) -> bool:
         """Return whether the value matches this version format."""
-        return (
-            cls is not Version
-            and cls.__pattern.fullmatch(value) is not None
-        )
+        return cls is not Version and cls.__pattern.fullmatch(value) is not None
 
     @classmethod
     def formats(cls) -> tuple[type[Version], ...]:
@@ -90,10 +93,11 @@ class Version(BaseModel, metaclass=__VersionMeta):
 
         return convert_version(source=self, target_type=to)
 
+
 def parse_from_str(value: str) -> Version:
     """
     Parse from string and return Version subclass.
-    
+
     raises: UnknownVersionFormatError, AmbiguousVersionFormatError
     """
     matched_types = [
@@ -107,16 +111,20 @@ def parse_from_str(value: str) -> Version:
 
     if len(matched_types) > 1:
         matched_names = ", ".join(
-            version_type.__name__
-            for version_type in matched_types
+            version_type.__name__ for version_type in matched_types
         )
 
-        raise AmbiguousVersionFormatError(f"{value!r} matches several formats: {matched_names}")
+        raise AmbiguousVersionFormatError(
+            f"{value!r} matches several formats: {matched_names}"
+        )
 
     version_type = matched_types[0]
     return version_type(version=value)
 
-def in_allowed_format(version: str, formats: UnionType[Version], raise_an_error=False) -> bool:
+
+def in_allowed_format(
+    version: str, formats: UnionType[Version], raise_an_error=False
+) -> bool:
     """Check that provided `version` is any of allowed `formats`.
 
     Usage:
@@ -126,16 +134,13 @@ def in_allowed_format(version: str, formats: UnionType[Version], raise_an_error=
     """
     v = parse_from_str(version)
     is_valid_format = isinstance(v, formats)
-    if not is_valid_format:
-        if raise_an_error:
-            allowed_formats = "".join(
-                f"{f.__name__}: {f.EXAMPLE!r}; "
-                for f in get_args(formats)
-            )
-            raise TypeError(
-                f"Version {version!r} is not in allowed formats. "
-                f"Allowed formats: "
-                f"{allowed_formats}"
-            )
+    if not is_valid_format and raise_an_error:
+        allowed_formats = "".join(
+            f"{f.__name__}: {f.EXAMPLE!r}; " for f in get_args(formats)
+        )
+        raise TypeError(
+            f"Version {version!r} is not in allowed formats. "
+            f"Allowed formats: "
+            f"{allowed_formats}"
+        )
     return is_valid_format
-    

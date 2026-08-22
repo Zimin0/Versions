@@ -22,9 +22,13 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "pytest>=8,<10",
+    "pytest-cov>=6",
     "build>=1.2",
+    "black>=25",
+    "ruff>=0.12",
+    "mypy>=1.17",
+    "pre-commit>=4",
 ]
-
 
 [project.urls]
 Repository = "https://github.com/Zimin0/Versions"
@@ -49,3 +53,15 @@ local_scheme = "node-and-date"
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra"
+
+[tool.ruff]
+target-version = "py310"
+line-length = 88
+
+[tool.ruff.lint]
+select = [
+    "E",  # pycodestyle errors
+    "F",  # Pyflakes
+    "I",  # import sorting
+    "B",  # flake8-bugbear
+]

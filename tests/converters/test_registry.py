@@ -1,12 +1,10 @@
 import pytest
 
-from versions.version import Version
+from tests.helpers import HashFormat, SemverFormat, YearQuartalFormat
 from versions.converters.converter import Converter
 from versions.converters.errors import ConverterDoesNotImplementedError
 from versions.converters.registry import ConvertersRegistry
-
-from tests.helpers import HashFormat, SemverFormat, YearQuartalFormat
-from tests.converters.helpers import registry
+from versions.version import Version
 
 
 def test_can_append_converter(registry: ConvertersRegistry):
@@ -38,6 +36,7 @@ def test_get_all_returns_all_registered_converters(registry: ConvertersRegistry)
         SemverToHashConverter,
         HashToSemverConverter,
     )
+
 
 def test_can_find_converter(registry: ConvertersRegistry):
     class SemverToHashConverter:

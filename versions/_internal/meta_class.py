@@ -1,7 +1,10 @@
+from typing import ClassVar
+
 from pydantic import BaseModel
 
+
 class __VersionMeta(type(BaseModel)):
-    IMMUTABLE_ATTRIBUTES = {
+    IMMUTABLE_ATTRIBUTES: ClassVar[set[str]] = {
         "REGEX",
         "EXAMPLE",
     }
@@ -9,5 +12,5 @@ class __VersionMeta(type(BaseModel)):
     def __setattr__(self, name, value):
         if (name in self.IMMUTABLE_ATTRIBUTES) and (name in self.__dict__):
             raise AttributeError(f"__VersionMeta.{name!r} attribute is immutable.")
-        
+
         return super().__setattr__(name, value)

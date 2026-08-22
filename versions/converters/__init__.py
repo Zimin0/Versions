@@ -6,6 +6,6 @@ from .service import load_converters
 
 __all__ = [
     "Converter",
-    "main_converter_registry",
     "load_converters",
+    "main_converter_registry",
 ]
