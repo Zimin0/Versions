@@ -244,7 +244,7 @@ Semver.matches("11.5.7+25.3")
 
 ## Creating a Custom Converter
 
-Create a subclass of `Converter`, define its source and target version types, and implement `convert()`.
+Create a subclass of `Converter`, define i  ts source and target version types, and implement `convert()`.
 
 ```python
 from versions.converters.converter import Converter

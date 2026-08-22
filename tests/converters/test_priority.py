@@ -1,8 +1,11 @@
 import pytest
 
 from versions.converters.converter import Converter
+from versions.converters.errors import ConverterPriorityConflictError
 from versions.converters.registry import ConvertersRegistry
 from versions.version import Version
+
+from tests.converters.helpers import registry
 
 
 class SourceVersion(Version):
@@ -20,7 +23,7 @@ class AnotherTargetVersion(Version):
     EXAMPLE = "build-1"
 
 
-def test_registry_returns_converter_with_highest_priority():
+def test_registry_returns_converter_with_highest_priority(registry: ConvertersRegistry):
     class LowPriorityConverter:
         SOURCE_TYPE = SourceVersion
         TARGET_TYPE = TargetVersion
@@ -31,18 +34,18 @@ def test_registry_returns_converter_with_highest_priority():
         TARGET_TYPE = TargetVersion
         PRIORITY = 1
 
-    registry = ConvertersRegistry()
 
-    # Специально регистрируем сначала менее приоритетный.
+    # register the less priority one first
     registry.append(LowPriorityConverter)
     registry.append(HighPriorityConverter)
 
-    result = registry.find_Converter(SourceVersion, TargetVersion)
+    result = registry.find_converters(SourceVersion, TargetVersion)
 
-    assert result is HighPriorityConverter
+    assert result[0] is HighPriorityConverter
+    assert result[1] is LowPriorityConverter
 
 
-def test_registry_priority_does_not_depend_on_registration_order():
+def test_registry_priority_does_not_depend_on_registration_order(registry: ConvertersRegistry):
     class HighPriorityConverter:
         SOURCE_TYPE = SourceVersion
         TARGET_TYPE = TargetVersion
@@ -53,17 +56,16 @@ def test_registry_priority_does_not_depend_on_registration_order():
         TARGET_TYPE = TargetVersion
         PRIORITY = 100
 
-    registry = ConvertersRegistry()
-
     registry.append(HighPriorityConverter)
     registry.append(LowPriorityConverter)
 
-    result = registry.find_Converter(SourceVersion, TargetVersion)
+    result = registry.find_converters(SourceVersion, TargetVersion)
 
-    assert result is HighPriorityConverter
+    assert result[0] is HighPriorityConverter
+    assert result[1] is LowPriorityConverter
 
 
-def test_registry_uses_priority_only_for_matching_converter_pair():
+def test_registry_uses_priority_only_for_matching_converter_pair(registry: ConvertersRegistry):
     class HighPriorityAnotherTargetConverter:
         SOURCE_TYPE = SourceVersion
         TARGET_TYPE = AnotherTargetVersion
@@ -74,17 +76,16 @@ def test_registry_uses_priority_only_for_matching_converter_pair():
         TARGET_TYPE = TargetVersion
         PRIORITY = 100
 
-    registry = ConvertersRegistry()
-
     registry.append(HighPriorityAnotherTargetConverter)
     registry.append(MatchingConverter)
 
-    result = registry.find_Converter(SourceVersion, TargetVersion)
+    result = registry.find_converters(SourceVersion, TargetVersion)
 
-    assert result is MatchingConverter
+    assert len(result) == 1
+    assert result[0] is MatchingConverter
 
 
-def test_registry_returns_first_registered_converter_when_priorities_are_equal():
+def test_registry_raise_a_error_when_priorities_are_equal(registry: ConvertersRegistry):
     class FirstConverter:
         SOURCE_TYPE = SourceVersion
         TARGET_TYPE = TargetVersion
@@ -95,14 +96,12 @@ def test_registry_returns_first_registered_converter_when_priorities_are_equal()
         TARGET_TYPE = TargetVersion
         PRIORITY = 5
 
-    registry = ConvertersRegistry()
-
     registry.append(FirstConverter)
-    registry.append(SecondConverter)
-
-    result = registry.find_Converter(SourceVersion, TargetVersion)
-
-    assert result is FirstConverter
+    with pytest.raises(
+            ConverterPriorityConflictError, 
+            match="Two converters for the same source and target cannot have the same priority."
+        ):
+        registry.append(SecondConverter)
 
 
 def test_converter_rejects_zero_priority():
@@ -144,3 +143,55 @@ def test_converter_default_priority_is_one():
             return TargetVersion(version=f"v{source_version.version}")
 
     assert DefaultPriorityConverter.PRIORITY == 1
+
+def test_chain_of_responsibility_for_converters(registry: ConvertersRegistry):
+    class ConverterBroken1(Converter):
+        SOURCE_TYPE = SourceVersion
+        TARGET_TYPE = TargetVersion
+        PRIORITY = 1
+
+        def convert(self, source_version: Version):
+            raise Exception("Convertor-1 exception.")
+    
+    class ConverterBroken2(Converter):
+        SOURCE_TYPE = SourceVersion
+        TARGET_TYPE = TargetVersion
+        PRIORITY = 2
+
+        def convert(self, source_version: Version):
+            raise Exception("Convertor-2 exception.")
+
+    class ConverterCorrect3(Converter):
+        SOURCE_TYPE = SourceVersion
+        TARGET_TYPE = TargetVersion
+        PRIORITY = 3
+
+        def convert(self, source_version: Version):
+            print("ConverterCorrect3 was used succesfully.")
+            return TargetVersion(version=f"v{source_version.version}234567")
+    
+    from versions.converters.service import convert_version
+
+    version = SourceVersion(version="1")   
+    converted_version = convert_version(source=version, target_type=TargetVersion, registry=registry)
+
+    assert len(registry) == 3, f"Registered only 3 coverters but found {len(registry)}"
+    assert converted_version.version == "v1234567" 
+
+def test_registry_rejects_same_source_target_and_priority(registry: ConvertersRegistry):
+    class FirstConverter:
+        SOURCE_TYPE = SourceVersion
+        TARGET_TYPE = TargetVersion
+        PRIORITY = 1
+
+    class SecondConverter:
+        SOURCE_TYPE = SourceVersion
+        TARGET_TYPE = TargetVersion
+        PRIORITY = 1
+
+    registry.append(FirstConverter)
+
+    with pytest.raises(ConverterPriorityConflictError):
+        registry.append(SecondConverter)
+
+    assert len(registry) == 1

@@ -5,7 +5,7 @@ from versions.converters import load_converters, main_converter_registry
 
 from custom_versions import Semver, Hash, BuildVersion
 
-load_converters("example_of_usage.custom_converters")
+load_converters("custom_converters")
 
 
 # Any subclass of Version is immutable.
@@ -78,17 +78,11 @@ else:
 
 print("## Scenario 5: Show all available version converters.")
 
-print(
-    "Available converters:",
-    main_converter_registry.get_all(),
-)
+print("Available converters:", main_converter_registry.get_all())
 
 
 print("## Scenario 6: Convert Semver to BuildVersion.")
 
 converted_version = source.convert_to(BuildVersion)
 
-print(
-    "Converted Semver to BuildVersion:",
-    converted_version,
-)
+print("Converted Semver to BuildVersion:", converted_version)

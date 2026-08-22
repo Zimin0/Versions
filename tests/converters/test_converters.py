@@ -4,26 +4,10 @@ from versions.version import Version
 from versions.converters.converter import Converter
 from versions.converters.registry import ConvertersRegistry
 
-import versions.converters.converter as converter_module
-
 from tests.helpers import HashFormat, SemverFormat
+from tests.converters.helpers import registry
 
-
-@pytest.fixture()
-def converter_registry(monkeypatch) -> ConvertersRegistry:
-    """Create isolated converter registry."""
-    registry = ConvertersRegistry()
-
-    monkeypatch.setattr(
-        converter_module,
-        "main_converter_registry",
-        registry,
-    )
-
-    return registry
-
-
-def test_new_converter_class_was_registered(converter_registry: ConvertersRegistry):
+def test_new_converter_class_was_registered(registry: ConvertersRegistry):
     class SemverToHashConverter(Converter):
         SOURCE_TYPE = SemverFormat
         TARGET_TYPE = HashFormat
@@ -31,7 +15,7 @@ def test_new_converter_class_was_registered(converter_registry: ConvertersRegist
         def convert(self, source_version: Version):
             return HashFormat(version=HashFormat.EXAMPLE)
 
-    assert SemverToHashConverter in converter_registry.get_all()
+    assert SemverToHashConverter in registry.get_all()
 
 
 def test_converter_source_and_target_types():
@@ -136,15 +120,15 @@ def test_converter_str():
 
     assert str(converter) == (f"SemverToHashConverter: {SemverFormat!r} --> {HashFormat!r}")
 
-def test_abstract_converter_was_not_registered(converter_registry: ConvertersRegistry):
+def test_abstract_converter_was_not_registered(registry: ConvertersRegistry):
     with pytest.raises(TypeError):
         class AbstractConverter(Converter):
             SOURCE_TYPE = SemverFormat
             TARGET_TYPE = HashFormat
-        AbstractConverter not in converter_registry.get_all()
+        AbstractConverter not in registry.get_all()
 
 
-def test_concrete_converter_was_registered(converter_registry: ConvertersRegistry):
+def test_concrete_converter_was_registered(registry: ConvertersRegistry):
     class SemverToHashConverter(Converter):
         SOURCE_TYPE = SemverFormat
         TARGET_TYPE = HashFormat
@@ -152,7 +136,7 @@ def test_concrete_converter_was_registered(converter_registry: ConvertersRegistr
         def convert(self, source_version: Version):
             return HashFormat(version=HashFormat.EXAMPLE)
 
-    assert SemverToHashConverter in converter_registry.get_all()
+    assert SemverToHashConverter in registry.get_all()
 
 @pytest.mark.parametrize(
         "priority", [-10, 0]
@@ -166,5 +150,3 @@ def test_converter_have_a_positive_priority(priority: int):
     
             def convert(self, source_version: Version):
                 return HashFormat(version=HashFormat.EXAMPLE)
-
-    # assert SemverToHashConverter in converter_registry.get_all()
